@@ -80,7 +80,8 @@ Visit http://localhost:5173 (or the port shown in your terminal).
 Create a `.env` file in the `server/` directory with the following content:
 
 ```
-PORT=5000
+PORT=3000
+DATABASE_PASSWORD=your_mongodb_connection_password
 MONGO_URI=your_mongodb_connection_string
 SECRET_JWT_KEY=your_jwt_secret
 ```

@@ -1,9 +1,12 @@
 import { Container, Box } from "@chakra-ui/react";
 import { ChatState } from "./../context/ChatProvider";
-import React from "react";
+import React, { useState } from "react";
 import NavBar from "./../components/miscellaneous/NavBar";
+import MyChats from "@/components/miscellaneous/MyChats";
+import ChatBox from "@/components/miscellaneous/ChatBox";
 
 const ChatPage = () => {
+  const [fetchAgain, setFetchAgain] = useState(false);
   const { user } = ChatState();
 
   return (
@@ -32,15 +35,14 @@ const ChatPage = () => {
       <Box
         display="flex"
         justifyContent="space-between"
-        bg="blue"
-        height="full"
+        height="80%"
         // flexDirection="row"
       >
-        <Box bg="blue.400" width="30%">
-          2
-        </Box>
-        <Box bg="pink.200" width="68%">
-          3
+        <Box width="30%">{user && <MyChats fetchAgain={fetchAgain} />}</Box>
+        <Box width="68%">
+          {user && (
+            <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+          )}
         </Box>
       </Box>
     </Container>

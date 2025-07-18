@@ -13,19 +13,66 @@ import {
   HStack,
   Skeleton,
   SkeletonCircle,
+  Spinner,
 } from "@chakra-ui/react";
 import { Search } from "lucide-react";
 import { toaster } from "@/components/ui/toaster";
 import axios from "axios";
 import ChatLoading from "../ChatLoading";
 import UserItemList from "../UserItemList";
+import { ChatState } from "@/context/ChatProvider";
 
 const SideDrawer = ({ user, isOpen, onClose }) => {
   const ref = useRef(null);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
-  //   const [loadingChat, setLoadingChat] = useState();
+  const [loadingChat, setLoadingChat] = useState(false);
+
+  const { setSelectedChat, chats, setChats } = ChatState();
+
+  const accessChats = async (userId) => {
+    try {
+      setLoadingChat(true);
+
+      const existingChat = chats.find(
+        (c) => c.users && c.users.some((user) => user._id === userId)
+      );
+
+      if (existingChat) {
+        setSelectedChat(existingChat);
+        setLoadingChat(false);
+        onClose();
+        return;
+      }
+
+      const config = {
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.post("api/chats", { userId }, config);
+      setSelectedChat(data.data.Chat);
+      // console.log(data.data.Chat);
+      console.log(chats);
+      if (!chats.find((c) => c._id === data.data.Chat._id)) {
+        console.log(data);
+        console.log(data.data);
+        setChats([data.data.Chat, ...chats]);
+      }
+      setLoadingChat(false);
+      onClose();
+    } catch (err) {
+      console.log(err);
+      toaster.create({
+        title: err.message,
+        type: "error",
+      });
+    }
+    setLoadingChat(false);
+  };
 
   const handleSearch = async () => {
     if (!search) {
@@ -35,7 +82,6 @@ const SideDrawer = ({ user, isOpen, onClose }) => {
       });
       return;
     }
-    console.log(user);
 
     try {
       setLoading(true);
@@ -48,7 +94,6 @@ const SideDrawer = ({ user, isOpen, onClose }) => {
       const { data } = await axios.get(`/api/users?search=${search}`, config);
       setLoading(false);
       setSearchResult(data.data.users);
-      console.log(searchResult);
     } catch (err) {
       console.log(err);
       toaster.create({
@@ -105,12 +150,19 @@ const SideDrawer = ({ user, isOpen, onClose }) => {
                     <ChatLoading />
                   ) : (
                     <Stack gap={3}>
-                      {searchResult.map((user) => (
-                        <UserItemList user={user} />
+                      {searchResult.map((el) => (
+                        <UserItemList
+                          key={el._id}
+                          user={el}
+                          handleFunction={() => {
+                            accessChats(el._id);
+                          }}
+                        />
                       ))}
                     </Stack>
                   )}
                 </Box>
+                {loadingChat && <Spinner />}
               </Drawer.Body>
               <Drawer.CloseTrigger asChild>
                 <CloseButton size="sm" />

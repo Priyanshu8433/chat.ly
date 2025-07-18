@@ -2,9 +2,16 @@ import React from "react";
 import { Stack, HStack, Avatar, Text, Box } from "@chakra-ui/react";
 import { ChevronDown, Search, Plus } from "lucide-react";
 
-const UserItemList = ({ user }) => {
+const UserItemList = ({ user, handleFunction }) => {
   return (
-    <Box bg={"gray.subtle"} padding={"8px 16px"} rounded={5}>
+    <Box
+      onClick={handleFunction}
+      bg={"gray.subtle"}
+      padding={"8px 16px"}
+      rounded={5}
+      margin={"0 0 5x 0"}
+      _hover={{ bg: "teal.subtle", cursor: "pointer" }}
+    >
       <HStack gap="5" width={"100%"}>
         <Avatar.Root height={"12"} width={"12"}>
           <Avatar.Fallback name={user.name} fontSize={"20px"} />
@@ -19,9 +26,6 @@ const UserItemList = ({ user }) => {
             {user.email}
           </Text>
         </Stack>
-        <Box _hover={{ bg: "whiteAlpha.200" }} padding={"4px"}>
-          <Plus color="#2dd4bf" />
-        </Box>
       </HStack>
     </Box>
   );

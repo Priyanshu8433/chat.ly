@@ -11,12 +11,15 @@ import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const { user } = ChatState();
+  const { user, setUser, setChats, setSelectedChat } = ChatState();
   const [profileOpen, setProfileOpen] = useState(false);
   const [sideDrawerOpen, setSideDrawer] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
+    setUser(null);
+    setChats([]);
+    setSelectedChat(null);
     navigate("/");
   };
 
@@ -29,7 +32,7 @@ const NavBar = () => {
         alignItems="center"
         padding="0 20px"
       >
-        <Tooltip showArrow content="This is the tooltip content">
+        <Tooltip showArrow content="Click to search user">
           <Button
             variant="subtle"
             size="lg"

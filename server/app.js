@@ -6,11 +6,12 @@ const globalErrorHandler = require("./utils/globalErrorHandler");
 
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 
 const chats = require("./data/data");
 
 const app = express();
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 
 app.use(express.json());
 app.use(cors());
@@ -23,6 +24,7 @@ app.get("/", (req, res, next) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);

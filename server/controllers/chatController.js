@@ -3,7 +3,7 @@ const Chat = require("./../models/chatModel");
 const User = require("../models/userModel");
 
 exports.accessChat = AsyncHandler(async (req, res, next) => {
-  //current will send the user id with whom to create a chat
+  //current user will send the user id with whom to create a chat
 
   const { userId } = req.body;
   if (!userId) {
@@ -46,7 +46,7 @@ exports.accessChat = AsyncHandler(async (req, res, next) => {
       res.status(201).json({
         status: "success",
         data: {
-          Chat: createdChat,
+          Chat: FullChat,
         },
       });
     } catch (err) {
@@ -74,7 +74,7 @@ exports.fetchChat = AsyncHandler(async (req, res, next) => {
     });
 
     if (chats.length <= 0) {
-      throw new Error("User is not in any chat");
+      return;
     }
 
     res.status(200).json({
