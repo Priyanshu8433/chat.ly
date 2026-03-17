@@ -6,7 +6,7 @@ import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
 
-const ENDPOINT = "https://chatly-server-lg2n.onrender.com/";
+const ENDPOINT = "https://chatly-server-lg2n.onrender.com";
 
 const SingleChat = () => {
   const socket = useRef(null);
@@ -19,7 +19,7 @@ const SingleChat = () => {
   const { user, selectedChat } = ChatState();
 
   useEffect(() => {
-    socket.current = io(ENDPOINT);
+    socket.current = io(ENDPOINT, { transports: ["websocket"] });
     socket.current.emit("setup", user.data.user);
     socket.current.on("connected", () => {
       setSocketConnected(true);
