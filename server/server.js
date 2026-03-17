@@ -18,17 +18,21 @@ mongoose
     console.log(err.message);
   });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);
 });
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    // origin: "http://localhost:5173",
-    origin: "*",
+    origin: allowedOrigins,
   },
 });
 

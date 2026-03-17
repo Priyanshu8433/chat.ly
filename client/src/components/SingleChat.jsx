@@ -18,7 +18,10 @@ const SingleChat = () => {
 
   const { user, selectedChat } = ChatState();
 
+  // Connect socket only after user is available
   useEffect(() => {
+    if (!user) return;
+
     socket.current = io(ENDPOINT, { transports: ["websocket"] });
     socket.current.emit("setup", user.data.user);
     socket.current.on("connected", () => {
@@ -28,7 +31,12 @@ const SingleChat = () => {
     socket.current.on("connect_error", (error) => {
       console.error("Socket connection error:", error);
     });
-  }, []);
+
+    return () => {
+      socket.current?.disconnect();
+      setSocketConnected(false);
+    };
+  }, [user]);
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -46,7 +54,7 @@ const SingleChat = () => {
       );
       setMessages(data.data.messages);
 
-      if (socket && socketConnected) {
+      if (socketConnected) {
         socket.current.emit("join chat", selectedChat._id);
       }
     } catch (err) {
@@ -61,11 +69,11 @@ const SingleChat = () => {
   };
 
   useEffect(() => {
-    console.log("working");
-    fetchMessages();
+    if (!selectedChat || !socketConnected) return;
 
     selectedChatCompare.current = selectedChat;
-  }, [selectedChat]);
+    fetchMessages();
+  }, [selectedChat, socketConnected]);
 
   useEffect(() => {
     const messageReceivedHandler = (newMessageReceived) => {
@@ -79,12 +87,16 @@ const SingleChat = () => {
       }
     };
 
-    socket.current.on("message received", messageReceivedHandler);
+    if (socket.current) {
+      socket.current.on("message received", messageReceivedHandler);
+    }
 
     return () => {
-      socket.current.off("message received", messageReceivedHandler);
+      if (socket.current) {
+        socket.current.off("message received", messageReceivedHandler);
+      }
     };
-  }, []);
+  }, [socketConnected]);
 
   const sendMessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
