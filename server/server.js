@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 
 const DB_URI = process.env.MONGO_URI.replace(
   "<db_password>",
-  process.env.DATABASE_PASSWORD
+  process.env.DATABASE_PASSWORD,
 );
 
 mongoose
@@ -27,7 +27,8 @@ const server = app.listen(PORT, () => {
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:5173",
+    // origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
   },
 });
 
@@ -47,12 +48,12 @@ io.on("connection", (socket) => {
   socket.on("new message", (newMessageRecieved) => {
     var chat = newMessageRecieved.chat;
     console.log("sending message");
-    
+
     if (!chat.users) return console.log("chat.users not defined");
-    
+
     chat.users.forEach((user) => {
       if (user._id == newMessageRecieved.sender._id) return;
-      
+
       console.log("message sent");
       socket.in(user._id).emit("message received", newMessageRecieved);
     });

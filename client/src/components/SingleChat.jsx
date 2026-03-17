@@ -6,7 +6,7 @@ import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
 
-const ENDPOINT = "http://localhost:3000";
+const ENDPOINT = "https://chatly-server-lg2n.onrender.com/";
 
 const SingleChat = () => {
   const socket = useRef(null);
@@ -16,7 +16,7 @@ const SingleChat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
 
-  const { user, selectedChat} = ChatState();
+  const { user, selectedChat } = ChatState();
 
   useEffect(() => {
     socket.current = io(ENDPOINT);
@@ -42,7 +42,7 @@ const SingleChat = () => {
 
       const { data } = await axios.get(
         `/api/messages/${selectedChat._id}`,
-        config
+        config,
       );
       setMessages(data.data.messages);
 
@@ -105,7 +105,7 @@ const SingleChat = () => {
             content: messageContent,
             chatId: selectedChat._id,
           },
-          config
+          config,
         );
 
         socket.current.emit("new message", data.data.message);
