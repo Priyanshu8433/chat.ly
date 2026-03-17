@@ -46,16 +46,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("new message", (newMessageRecieved) => {
-    var chat = newMessageRecieved.chat;
-    console.log("sending message");
+    const chat = newMessageRecieved.chat;
 
     if (!chat.users) return console.log("chat.users not defined");
 
-    chat.users.forEach((user) => {
-      if (user._id == newMessageRecieved.sender._id) return;
-
-      console.log("message sent");
-      socket.in(user._id).emit("message received", newMessageRecieved);
-    });
+    socket.in(chat._id).emit("message received", newMessageRecieved);
   });
 });
